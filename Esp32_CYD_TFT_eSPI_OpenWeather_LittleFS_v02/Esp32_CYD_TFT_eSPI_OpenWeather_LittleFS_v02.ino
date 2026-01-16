@@ -1,3 +1,4 @@
+
 /*
   The sketch is displaying a nice Internet Weather Station with 3 4 days forecast on an
   ESP32-Cheap Yellow Display (CYD) with 2.8-inch TFT display and 320x240 pixels resolution.
@@ -136,7 +137,7 @@ void printWeather(void);
 int leftOffset(String text, String sub);
 int rightOffset(String text, String sub);
 int splitIndex(String text);
-int getNextDayIndex(void);
+int getNextDayIndex(int today);
 
 bool tft_output(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t* bitmap) {
   // Stop further decoding as image is running off bottom of screen
@@ -153,6 +154,8 @@ bool tft_output(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t* bitmap) 
 **                          Setup
 ***************************************************************************************/
 void setup() {
+  pinMode(21,OUTPUT);
+  digitalWrite(21,HIGH);
   Serial.begin(250000);
   delay(500);
   Serial.println(PROGRAM_VERSION);
@@ -465,7 +468,9 @@ void drawCurrentWeather() {
 ***************************************************************************************/
 // draws the three forecast columns
 void drawForecast() {
-  int8_t dayIndex = getNextDayIndex();
+  int today = day( TIMEZONE.toLocal(now(), &tz1_Code));
+
+  int8_t dayIndex = getNextDayIndex(today);
 
   drawForecastDetail(8, 171, dayIndex);
   dayIndex += 8;
@@ -691,11 +696,10 @@ void fillSegment(int x, int y, int start_angle, int sub_angle, int r, unsigned i
 /***************************************************************************************
 **                          Get 3 hourly index at start of next day
 ***************************************************************************************/
-int getNextDayIndex(void) {
+int getNextDayIndex(int today) {//today is numeric 1-31
   int index = 0;
-  String today = forecast->dt_txt[0].substring(8, 10);
   for (index = 0; index < 9; index++) {
-    if (forecast->dt_txt[index].substring(8, 10) != today) break;
+    if (forecast->dt_txt[index].substring(8, 10).toInt() != today) break;
   }
   return index;
 }
