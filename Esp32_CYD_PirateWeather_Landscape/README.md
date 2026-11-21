@@ -4,15 +4,21 @@ An extended version of the CYD weather station in this repository for the 2.8" *
 "Cheap Yellow Display" (320 x 240). It keeps the look of the original (same icons, fonts and
 LittleFS data) and adds landscape layout, touch control, animations and much more weather data.
 
-| Now (animated) | Hourly | 8 days |
-|---|---|---|
-| ![Now](./images/p1_now_anim.gif) | ![Hourly](./images/p2_hourly.png) | ![8 days](./images/p3_days.png) |
+<p align="center"><img src="./images/logo.jpg" alt="Weather Station – Pirate Weather" width="260"></p>
 
-| Tide & sea (Home Assistant) | Air & home (Home Assistant) | Menu |
-|---|---|---|
+## Screenshots
+
+Real screenshots from the running device (`/api/screenshot.bmp`).
+
+| Now | Hourly | 8 days |
+|:---:|:---:|:---:|
+| ![Now](./images/p1_now.png) | ![Hourly](./images/p2_hourly.png) | ![8 days](./images/p3_days.png) |
+| **Tide & sea** *(Home Assistant)* | **Air & home** *(Home Assistant)* | **Menu** |
 | ![Tide](./images/p4_tide.png) | ![Air](./images/p5_air.png) | ![Menu](./images/p6_menu.png) |
 
-*Images are rendered 1:1 from the firmware with a host-side display simulator using the real fonts and icons of this repository.*
+Animated icons (preview rendered with a display simulator):
+
+<img src="./images/p1_now_anim.gif" alt="Animation preview" width="480">
 
 ## What is new compared to the original sketch
 
@@ -57,7 +63,7 @@ boot splash starts the touch calibration.
 5. Compile and upload. On first boot tap the three red crosses for the touch calibration.
    The boot screen shows the IP address of the web interface.
 
-Tested with Arduino IDE 2.3, arduino-esp32 core 3.x (core 2.x compiles as well), TFT_eSPI 2.5.43, ArduinoJson 7.4.
+Running on an ESP32-2432S028R with Arduino IDE 2.3, arduino-esp32 core 3.x, TFT_eSPI 2.5.43, ArduinoJson 7.4 (core 2.x compiles as well).
 
 ## Web interface and REST API
 
@@ -74,6 +80,8 @@ Open `http://<ip>/` (the IP is shown on the boot screen and at the bottom of the
 | `/api/refresh` | reload weather (+ Home Assistant) now |
 | `/api/brightness?d=±1` or `?day=0..11&night=0..11` | brightness |
 | `/update` | firmware upload (basic auth `WEB_USER` / `WEB_PASS`). Arduino IDE: *Sketch → Export Compiled Binary*, upload the `.ino.bin` file |
+
+**Note on firmware upload:** `/update` needs a partition scheme with two app slots. Use *Tools → Partition Scheme → Default 4MB with spiffs (1.2MB APP/1.5MB SPIFFS)* – the sketch (about 1.27 MB) fits. Schemes without OTA, such as *No OTA (2MB APP/2MB SPIFFS)*, can only be flashed via USB. After changing the partition scheme, upload the LittleFS `data` folder again.
 
 The web server is meant for your local network only – do not expose it to the internet.
 

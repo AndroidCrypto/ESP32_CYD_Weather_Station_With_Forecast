@@ -1,6 +1,6 @@
 /*
   =====================================================================================
-   CYD Weather Station - Landscape Edition  v2.3
+   CYD Weather Station - Landscape Edition  v2.4
   =====================================================================================
    Hardware : ESP32-2432S028R "Cheap Yellow Display", 2.8" 320x240, landscape
    Weather  : Pirate Weather (ECMWF IFS / GFS / radar nowcast)
@@ -72,7 +72,7 @@
 #define WEB_PASS "change-me"
 #endif
 
-static const char* PROGRAM_VERSION = "CYD Weather Landscape v2.3";
+static const char* PROGRAM_VERSION = "CYD Weather Landscape v2.4";
 
 #define AA_FONT_SMALL "fonts/NSBold15"   // 15 pt Noto Sans Bold (ASCII + °)
 #define AA_FONT_LARGE "fonts/NSBold36"   // 36 pt, only 0-9 + - . : °
@@ -500,9 +500,11 @@ void loop() {
     }
   }
 
-  if (overlayOpen && ms - lastTouchMs > OVERLAY_TIMEOUT_S * 1000UL) closeOverlay();
+  // signed difference: web handlers set lastTouchMs after 'ms' was taken
+  int32_t idleMs = (int32_t)(millis() - lastTouchMs);
+  if (overlayOpen && idleMs > (int32_t)(OVERLAY_TIMEOUT_S * 1000UL)) closeOverlay();
 
-  if (!overlayOpen && PAGE_TIMEOUT_S > 0 && page != 0 && ms - lastTouchMs > PAGE_TIMEOUT_S * 1000UL) {
+  if (!overlayOpen && PAGE_TIMEOUT_S > 0 && page != 0 && idleMs > (int32_t)(PAGE_TIMEOUT_S * 1000UL)) {
     page = 0;
     redrawPage();
   }
@@ -2131,10 +2133,10 @@ void webScreenshot() {
     tft.readRect(0, y, w, 1, line);
     for (int x = 0; x < w; x++) {
       uint16_t c = (uint16_t)((line[x] >> 8) | (line[x] << 8));   // readRect returns byte-swapped 565
-      // CYD panel is BGR: read-back has red and blue exchanged
+      // channel order as read back from the CYD panel (verified against the display)
       rgb[x * 3]     = ((c >> 11) & 0x1F) << 3;   // B
-      rgb[x * 3 + 1] = ((c >> 5) & 0x3F) << 2;    // G
-      rgb[x * 3 + 2] = (c & 0x1F) << 3;           // R
+      rgb[x * 3 + 1] = (c & 0x1F) << 3;           // G
+      rgb[x * 3 + 2] = ((c >> 5) & 0x3F) << 2;    // R
     }
     server.sendContent((const char*)rgb, rowBytes);
   }
