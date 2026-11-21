@@ -35,3 +35,11 @@ A Description can be found here: https://randomnerdtutorials.com/arduino-ide-2-i
 Arduino IDE Version 2.3.6 (Windows)
 arduino-esp32 boards Version 3.2.0 (https://github.com/espressif/arduino-esp32)
 ````
+
+## Landscape / Pirate Weather / Touch edition
+
+The folder [`Esp32_CYD_PirateWeather_Landscape`](./Esp32_CYD_PirateWeather_Landscape) contains an extended version of this
+weather station: landscape layout, Pirate Weather data (hourly 48 h, daily 8 days), touch control with calibration,
+animated weather icons, adjustable backlight with night mode, a web interface with live screenshot, REST API and
+firmware upload, and optional Home Assistant pages (tide, sea, indoor / outdoor air). It uses the same `data` folder
+(icons and fonts) as the original sketch. See its [README](./Esp32_CYD_PirateWeather_Landscape/README.md).
